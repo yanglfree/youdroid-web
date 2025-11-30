@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { BlogPost } from '../types';
@@ -18,6 +19,12 @@ const AdminPage: React.FC = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('lumina_is_admin');
+    window.dispatchEvent(new Event('auth-change'));
+    navigate('/login');
+  };
+
   return (
     <div className="pt-32 pb-20 px-6 max-w-7xl mx-auto min-h-screen">
       <div className="flex justify-between items-center mb-10">
@@ -25,13 +32,22 @@ const AdminPage: React.FC = () => {
           <h1 className="text-3xl font-bold text-primary">内容管理</h1>
           <p className="text-secondary mt-2">管理你的博客文章与草稿</p>
         </div>
-        <Link 
-          to="/editor" 
-          className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl font-medium hover:bg-opacity-90 transition-all shadow-lg hover:shadow-xl"
-        >
-          <i className="ph ph-plus-circle text-xl"></i>
-          新建文章
-        </Link>
+        <div className="flex gap-4">
+             <button 
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-5 py-3 border border-gray-200 text-secondary rounded-xl font-medium hover:bg-gray-50 transition-all"
+            >
+                <i className="ph ph-sign-out text-xl"></i>
+                退出
+            </button>
+            <Link 
+            to="/editor" 
+            className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl font-medium hover:bg-opacity-90 transition-all shadow-lg hover:shadow-xl"
+            >
+            <i className="ph ph-plus-circle text-xl"></i>
+            新建文章
+            </Link>
+        </div>
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">

@@ -1,17 +1,32 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
     };
+    
+    // Check admin status initially
+    const checkAuth = () => {
+        setIsAdmin(localStorage.getItem('lumina_is_admin') === 'true');
+    };
+    checkAuth();
+
+    // Listen for auth changes (login/logout)
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('auth-change', checkAuth);
+    
+    return () => {
+        window.removeEventListener('scroll', handleScroll);
+        window.removeEventListener('auth-change', checkAuth);
+    };
   }, []);
 
   const navClass = `fixed w-full z-50 transition-all duration-300 ${
@@ -39,7 +54,11 @@ const Navbar: React.FC = () => {
           <div className="hidden md:flex space-x-8 items-center">
             <Link to="/" className={linkClass('/')}>首页</Link>
             <Link to="/articles" className={linkClass('/articles')}>文章</Link>
-            <Link to="/admin" className={linkClass('/admin')}>管理后台</Link>
+            
+            {isAdmin && (
+                <Link to="/admin" className={linkClass('/admin')}>管理后台</Link>
+            )}
+
             <button className="px-5 py-2.5 bg-primary text-white text-sm font-medium rounded-full hover:bg-opacity-90 transition-all hover:shadow-lg">
               订阅更新
             </button>
@@ -63,7 +82,9 @@ const Navbar: React.FC = () => {
           <div className="px-6 pt-4 pb-6 space-y-3 flex flex-col">
             <Link to="/" onClick={() => setIsOpen(false)} className="block text-base font-medium text-secondary hover:text-primary">首页</Link>
             <Link to="/articles" onClick={() => setIsOpen(false)} className="block text-base font-medium text-secondary hover:text-primary">文章</Link>
-            <Link to="/admin" onClick={() => setIsOpen(false)} className="block text-base font-medium text-secondary hover:text-primary">管理后台</Link>
+            {isAdmin && (
+                <Link to="/admin" onClick={() => setIsOpen(false)} className="block text-base font-medium text-secondary hover:text-primary">管理后台</Link>
+            )}
             <button className="text-left block text-base font-medium text-accent">订阅更新</button>
           </div>
         </div>
